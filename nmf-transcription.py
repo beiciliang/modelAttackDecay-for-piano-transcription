@@ -1,6 +1,7 @@
 
 # coding: utf-8
 
+import os
 import numpy as np
 import scipy
 from scipy.signal import hamming, blackmanharris, spectrogram, medfilt,convolve2d,argrelmax
@@ -9,11 +10,13 @@ import librosa
 import matplotlib
 
 ##### Parameters required to specify for the transcription #####
-endTimeInSecond = 6 # audio length in second
 initNote = 60 # starting midi note from the trained note
-templateFile = './result/templates.mat'
-inputFile = './data/arpeggio-example.wav'
-resultFile = './result/arpeggio-example-transcription.csv'
+templateFile = os.path.abspath('./result/templates.mat')
+inputFile = os.path.abspath('./data/arpeggio-example.wav')
+resultFile = os.path.abspath('./result/arpeggio-example-transcription.npy')
+pianoRollFile = os.path.abspath('./result/arpeggio-example-pianoroll.npy')
+y, fs = librosa.load(inputFile,sr=44100)
+endTimeInSecond = int(np.floor(librosa.get_duration(y=y, sr=fs))) # audio length in second
 
 parameters_R = len(np.arange(60,84+1)) # how many notes are used as candidate (should equal to the number of traning notes)
 parameters_update = np.array([0,0,0,1,0]) # update flags for [W,TS,a,H,pattern]
@@ -432,7 +435,9 @@ X = computeTFR(inputFile, endTimeInSecond)
 initialisation = setInitialisation(templates,X,np.array([]),parameters)
 result = convNMFT(X,initialisation, endTimeInSecond);
 Note,pianoRoll = noteTracking(X, result, parameters['threshold'], endTimeInSecond, initNote)
-np.savetxt(resultFile, Note, delimiter=',')
+# np.savetxt(resultFile, Note, delimiter=',')
+np.save(resultFile, Note)
+np.save(pianoRollFile, pianoRoll)
 
 print("Transcription result of " + inputFile)
 print("for each row of the result, it shows: onset time, offset time, note midi no.")
