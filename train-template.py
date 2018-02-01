@@ -8,6 +8,7 @@ from scipy.signal import hamming, blackmanharris, spectrogram, medfilt, convolve
 from scipy.io import loadmat, savemat
 import librosa
 import matplotlib
+from tqdm import tqdm
 
 
 ##### Customised Parameters #####
@@ -298,7 +299,7 @@ templates_TS = np.zeros((freqBinNum,len(midiNotes)))
 templates_a = np.zeros((len(midiNotes),1))
 templates_pattern = np.zeros((len(midiNotes),result['pattern'].shape[1]))
 
-for (ind,midi) in enumerate(midiNotes):
+for (ind,midi) in enumerate(tqdm(midiNotes, ascii=True, desc="Training templates")):
     inputFile = inputFileIndicator%midi
     X = computeTFR(inputFile,endTimeInSecond)
     initialisation = setInitialisation(templates,X,Hini,parameters)
@@ -309,7 +310,7 @@ for (ind,midi) in enumerate(midiNotes):
     templates_a[ind,:] = result['a']
     templates_pattern[ind,:] = result['pattern']
 
-    print("Isolated note midi no.%s template obtained." %midi)
+    # print("Isolated note midi no.%s template obtained." %midi)
 
 
 pattern_average = np.average(templates_pattern,axis=0)

@@ -8,6 +8,7 @@ from scipy.signal import hamming, blackmanharris, spectrogram, medfilt,convolve2
 from scipy.io import loadmat
 import librosa
 import matplotlib
+from tqdm import tqdm
 
 ##### Parameters required to specify for the transcription #####
 initNote = 60 # starting midi note from the trained note
@@ -208,7 +209,7 @@ def convNMFT(X, initialisation, endTimeInSecond):
         spar = sparsity[0]+(sparsity[1]-sparsity[0])*(np.arange(1,51))/float(iteration)
 
 
-    for it in range(iteration):   
+    for it in tqdm(range(iteration), ascii=True, desc="Update parameters"):   
 
         if updateW:
             W = W * ((V**(beta-2) * X).dot(Hea.conj().T)) / ((V**(beta-1)).dot(Hea.conj().T)) + np.finfo(float).eps
@@ -387,7 +388,7 @@ def noteTracking(X, result, threshold, endTimeInSecond, initNote):
     pianoRoll = np.zeros(H.shape)
     num = 0
 
-    for r in range(R):
+    for r in tqdm(range(R), ascii=True, desc="Note tracking"):
 
         onsets = argrelmax(HP[r,:])[0]
         if bool(onsets.any()):
