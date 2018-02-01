@@ -9,22 +9,7 @@ from scipy.io import loadmat
 import librosa
 import matplotlib
 from tqdm import tqdm
-
-##### Parameters required to specify for the transcription #####
-initNote = 60 # starting midi note from the trained note
-templateFile = os.path.abspath('./result/templates.mat')
-inputFile = os.path.abspath('./data/arpeggio-example.wav')
-resultFile = os.path.abspath('./result/arpeggio-example-transcription.npy')
-pianoRollFile = os.path.abspath('./result/arpeggio-example-pianoroll.npy')
-y, fs = librosa.load(inputFile,sr=44100)
-endTimeInSecond = int(np.floor(librosa.get_duration(y=y, sr=fs))) # audio length in second
-
-parameters_R = len(np.arange(60,84+1)) # how many notes are used as candidate (should equal to the number of traning notes)
-parameters_update = np.array([0,0,0,1,0]) # update flags for [W,TS,a,H,pattern]
-parameters_sparsity = np.array([1,1.04]) # annealing sparsity
-parameters_threshold = -20
-parameters = {'R':parameters_R,'update':parameters_update,'sparsity':parameters_sparsity,'threshold':parameters_threshold}
-##############################
+import argparse
 
 ##### Define Fuctions #####
 
@@ -430,16 +415,40 @@ def noteTracking(X, result, threshold, endTimeInSecond, initNote):
 
 ##############################
 
+if __name__=="__main__":
 
-templates = loadmat(templateFile)
-X = computeTFR(inputFile, endTimeInSecond)
-initialisation = setInitialisation(templates,X,np.array([]),parameters)
-result = convNMFT(X,initialisation, endTimeInSecond);
-Note,pianoRoll = noteTracking(X, result, parameters['threshold'], endTimeInSecond, initNote)
-# np.savetxt(resultFile, Note, delimiter=',')
-np.save(resultFile, Note)
-np.save(pianoRollFile, pianoRoll)
+    argparser = argparse.ArgumentParser(
+        description = "NMF-based Piano Transcription."
+    )
+    argparser.add_argument("pieceName", type=str, help="The name of the input wav file.")
+    args = argparser.parse_args()
+    pieceName = args.pieceName
 
-print("Transcription result of " + inputFile)
-print("for each row of the result, it shows: onset time, offset time, note midi no.")
-print(Note) # show the result on screen
+    ##### Parameters required to specify for the transcription #####
+    initNote = 60 # starting midi note from the trained note
+    templateFile = os.path.abspath('./result/templates.mat')
+    inputFile = os.path.abspath('./data/%s.wav'%pieceName)
+    resultFile = os.path.abspath('./result/%s-transcription.npy'%pieceName)
+    pianoRollFile = os.path.abspath('./result/%s-example-pianoroll.npy'%pieceName)
+    y, fs = librosa.load(inputFile,sr=44100)
+    endTimeInSecond = int(np.floor(librosa.get_duration(y=y, sr=fs))) # audio length in second
+
+    parameters_R = len(np.arange(60,84+1)) # how many notes are used as candidate (should equal to the number of traning notes)
+    parameters_update = np.array([0,0,0,1,0]) # update flags for [W,TS,a,H,pattern]
+    parameters_sparsity = np.array([1,1.04]) # annealing sparsity
+    parameters_threshold = -20
+    parameters = {'R':parameters_R,'update':parameters_update,'sparsity':parameters_sparsity,'threshold':parameters_threshold}
+    ##############################
+
+    templates = loadmat(templateFile)
+    X = computeTFR(inputFile, endTimeInSecond)
+    initialisation = setInitialisation(templates,X,np.array([]),parameters)
+    result = convNMFT(X,initialisation, endTimeInSecond);
+    Note,pianoRoll = noteTracking(X, result, parameters['threshold'], endTimeInSecond, initNote)
+    # np.savetxt(resultFile, Note, delimiter=',')
+    np.save(resultFile, Note)
+    np.save(pianoRollFile, pianoRoll)
+
+    print("Transcription result of " + inputFile)
+    print("for each row of the result, it shows: onset time, offset time, note midi no.")
+    print(Note) # show the result on screen
