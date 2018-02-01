@@ -32,9 +32,9 @@ $ python train-template.py
 
 This will save the trained parameters in file `./result/templates.mat`.
 
-Transcription of example piano audio file `./data/arpeggio-example.wav` uses the above parameters to update the note activations by:
+Transcription of example piano audio file `./data/arpeggio-example.wav` uses the above templates to update the note activations by:
 ```
-$ python nmf-transcription.py
+$ python nmf-transcription.py arpeggio-example
 ```
 
 It will return:
@@ -52,6 +52,6 @@ for each row of the result, it shows: onset time, offset time, note midi no.
 
 Transcription result is saved in `./result/arpeggio-example-transcription.npy`, so as the piano roll representation in `./result/arpeggio-example-pianoroll.npy`. 
 
-#### If you wish to train and test on your own audio data, please change the initialisation at the beginning of each python script. 
+#### If you wish to train and test on your own audio data, please change the parameters at each python script. 
 
 P.S. A matlab implementation is provided at [Tian Cheng's soundsoftware repository](https://code.soundsoftware.ac.uk/projects/decay-model-for-piano-transcription).
