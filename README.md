@@ -50,7 +50,7 @@ for each row of the result, it shows: onset time, offset time, note midi no.
  [  1.98   2.42  84.  ]]
 ```
 
-Transcription result is also saved in `./result/arpeggio-example-transcription.npy`. 
+Transcription result is saved in `./result/arpeggio-example-transcription.npy`, so as the piano roll representation in `./result/arpeggio-example-pianoroll.npy`. 
 
 #### If you wish to train and test on your own audio data, please change the initialisation at the beginning of each python script. 
 
