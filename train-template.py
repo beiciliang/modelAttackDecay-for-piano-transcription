@@ -1,6 +1,7 @@
 
 # coding: utf-8
 
+import os
 import numpy as np
 import scipy
 from scipy.signal import hamming, blackmanharris, spectrogram, medfilt, convolve2d, argrelmax
@@ -12,9 +13,9 @@ import matplotlib
 ##### Customised Parameters #####
 midiNotes = np.arange(60,84+1)
 endTimeInSecond = 4
-inputFileIndicator = './data/note-%s.wav'
-outputTemplate = './result/templates.mat'
-initialFileH = './data/initialH.mat'
+inputFileIndicator = os.path.abspath('./data/note-%s.wav')
+outputTemplate = os.path.abspath('./result/templates.mat')
+initialFileH = os.path.abspath('./data/initialH.mat')
 
 parameters_R = 1 # 1 pitch to train the template
 parameters_update = np.array([1,1,1,0,1]) # update flags for [W,TS,a,H,pattern]
